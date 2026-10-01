@@ -3,6 +3,9 @@ from fastapi import FastAPI, HTTPException
 from app.models import Task, TaskCreate, TaskStatus
 from app.services import TaskService
 
+import urllib.request
+
+
 app = FastAPI(
     title="Task Manager API",
     version="1.0.0",
@@ -10,23 +13,30 @@ app = FastAPI(
 
 task_service = TaskService()
 
+TASK_NOT_FOUND = "Task not found."
 
-@app.get("/tasks", response_model=list[Task])
+
+@app.get("/tasks")
 def get_tasks() -> list[Task]:
     return task_service.get_all_tasks()
 
-
-@app.get("/tasks/{task_id}", response_model=Task)
+@app.get(
+    "/tasks/{task_id}",
+    responses={404: {"description": "Task not found"}},
+)
 def get_task(task_id: int) -> Task:
     task = task_service.get_task(task_id)
 
     if task is None:
-        raise HTTPException(status_code=404, detail="Task not found.")
+        raise HTTPException(status_code=404, detail=TASK_NOT_FOUND)
 
     return task
 
-
-@app.post("/tasks", response_model=Task, status_code=201)
+@app.post(
+    "/tasks",
+    status_code=201,
+    responses={400: {"description": "Invalid task data"}},
+)
 def create_task(task_data: TaskCreate) -> Task:
     try:
         return task_service.create_task(task_data)
@@ -37,21 +47,89 @@ def create_task(task_data: TaskCreate) -> Task:
         ) from error
 
 
-@app.patch("/tasks/{task_id}/status", response_model=Task)
+@app.patch(
+    "/tasks/{task_id}/status",
+    responses={404: {"description": "Task not found"}},
+)
 def update_task_status(task_id: int, status: TaskStatus) -> Task:
     task = task_service.update_status(task_id, status)
 
     if task is None:
-        raise HTTPException(status_code=404, detail="Task not found.")
+        raise HTTPException(status_code=404, detail=TASK_NOT_FOUND)
 
     return task
 
 
-@app.delete("/tasks/{task_id}")
+@app.delete(
+    "/tasks/{task_id}",
+    responses={404: {"description": "Task not found"}},
+)
 def delete_task(task_id: int) -> dict[str, str]:
     deleted = task_service.delete_task(task_id)
 
     if not deleted:
-        raise HTTPException(status_code=404, detail="Task not found.")
+        raise HTTPException(status_code=404, detail=TASK_NOT_FOUND)
 
     return {"message": "Task deleted successfully."}
+
+
+@app.get("/dependency/raw")
+def dependency_raw() -> dict[str, str]:
+    with urllib.request.urlopen(
+        "http://127.0.0.1:9001/data",
+        timeout=1,
+    ) as response:
+        return {"status": response.status}
+
+import time
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
+def get_dependency_with_resilience() -> dict[str, str | int]:
+    max_attempts = 3
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            with urllib.request.urlopen(
+                "http://127.0.0.1:9001/data",
+                timeout=1,
+            ) as response:
+                logger.info(
+                    "Dependency succeeded on attempt %s",
+                    attempt,
+                )
+                return {
+                    "status": "ok",
+                    "source": "external",
+                    "attempts": attempt,
+                }
+
+        except Exception as error:
+            logger.warning(
+                "Dependency attempt %s/%s failed: %s",
+                attempt,
+                max_attempts,
+                error,
+            )
+
+            if attempt < max_attempts:
+                time.sleep(0.1 * (2 ** (attempt - 1)))
+
+    logger.error(
+        "Dependency unavailable after %s attempts. Using fallback.",
+        max_attempts,
+    )
+
+    return {
+        "status": "fallback",
+        "source": "fallback",
+        "attempts": max_attempts,
+    }
+
+
+@app.get("/dependency/resilient")
+def dependency_resilient() -> dict[str, str | int]:
+    return get_dependency_with_resilience()
