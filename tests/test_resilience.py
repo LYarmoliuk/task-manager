@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from app.main import get_dependency_with_resilience
+from app.dependency import get_dependency_with_resilience
 
 
 def test_dependency_success_without_fallback() -> None:
@@ -16,7 +16,7 @@ def test_dependency_success_without_fallback() -> None:
     fake_response.status = 200
 
     with patch(
-        "app.main.urllib.request.urlopen",
+        "app.dependency.urllib.request.urlopen",
         return_value=fake_response,
     ) as mock_urlopen:
         result = get_dependency_with_resilience()
@@ -32,10 +32,10 @@ def test_dependency_success_without_fallback() -> None:
 
 def test_dependency_failure_uses_fallback_after_three_attempts() -> None:
     with patch(
-        "app.main.urllib.request.urlopen",
+        "app.dependency.urllib.request.urlopen",
         side_effect=TimeoutError("simulated timeout"),
     ) as mock_urlopen:
-        with patch("app.main.time.sleep"):
+        with patch("app.dependency.time.sleep"):
             result = get_dependency_with_resilience()
 
     assert result == {

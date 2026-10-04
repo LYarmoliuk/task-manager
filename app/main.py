@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException
 
 from app.models import Task, TaskCreate, TaskStatus
 from app.services import TaskService
-
-import urllib.request
+from app.dependency import (
+    get_dependency_with_resilience,
+    request_dependency,
+)
 
 
 app = FastAPI(
@@ -20,6 +22,7 @@ TASK_NOT_FOUND = "Task not found."
 def get_tasks() -> list[Task]:
     return task_service.get_all_tasks()
 
+
 @app.get(
     "/tasks/{task_id}",
     responses={404: {"description": "Task not found"}},
@@ -31,6 +34,7 @@ def get_task(task_id: int) -> Task:
         raise HTTPException(status_code=404, detail=TASK_NOT_FOUND)
 
     return task
+
 
 @app.post(
     "/tasks",
@@ -75,59 +79,7 @@ def delete_task(task_id: int) -> dict[str, str]:
 
 @app.get("/dependency/raw")
 def dependency_raw() -> dict[str, str]:
-    with urllib.request.urlopen(
-        "http://127.0.0.1:9001/data",
-        timeout=1,
-    ) as response:
-        return {"status": response.status}
-
-import time
-import logging
-
-
-logger = logging.getLogger(__name__)
-
-
-def get_dependency_with_resilience() -> dict[str, str | int]:
-    max_attempts = 3
-
-    for attempt in range(1, max_attempts + 1):
-        try:
-            with urllib.request.urlopen(
-                "http://127.0.0.1:9001/data",
-                timeout=1,
-            ) as response:
-                logger.info(
-                    "Dependency succeeded on attempt %s",
-                    attempt,
-                )
-                return {
-                    "status": "ok",
-                    "source": "external",
-                    "attempts": attempt,
-                }
-
-        except Exception as error:
-            logger.warning(
-                "Dependency attempt %s/%s failed: %s",
-                attempt,
-                max_attempts,
-                error,
-            )
-
-            if attempt < max_attempts:
-                time.sleep(0.1 * (2 ** (attempt - 1)))
-
-    logger.error(
-        "Dependency unavailable after %s attempts. Using fallback.",
-        max_attempts,
-    )
-
-    return {
-        "status": "fallback",
-        "source": "fallback",
-        "attempts": max_attempts,
-    }
+    return {"status": request_dependency()}
 
 
 @app.get("/dependency/resilient")
