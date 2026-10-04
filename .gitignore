@@ -6,3 +6,5 @@ htmlcov/
 .idea/
 .vscode/
 *.pyc
+.scannerwork/
+.env
