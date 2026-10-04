@@ -1,0 +1,2 @@
+pip-audit
+exit $LASTEXITCODE
