@@ -85,3 +85,8 @@ def dependency_raw() -> dict[str, str]:
 @app.get("/dependency/resilient")
 def dependency_resilient() -> dict[str, str | int]:
     return get_dependency_with_resilience()
+
+
+from app.privacy.api import install_privacy
+
+install_privacy(app)
