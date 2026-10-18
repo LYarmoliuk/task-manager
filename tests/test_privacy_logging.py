@@ -137,5 +137,6 @@ def test_uvicorn_style_structured_args_are_preserved_and_sanitized():
     logger.info('%s - "%s %s HTTP/%s" %d', "127.0.0.1:5000", "GET",
                 "/x?token=ABC123SECRETVALUE", "1.1", 200)
     out = stream.getvalue()
-    assert "200" in out and "GET" in out             # логування не зламано
+    assert "200" in out
+    assert "GET" in out             # логування не зламано
     assert "ABC123SECRETVALUE" not in out            # секрет у query замасковано

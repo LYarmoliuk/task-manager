@@ -27,10 +27,12 @@ def test_export_complete_for_own_data():
     store = seed_demo_store()
     data = build_personal_data_export(store, ALICE, 1, CID)
     assert data["meta"]["schema_version"] == "1.0"
-    assert data["meta"]["timezone"] == "UTC" and data["meta"]["subject_id"] == 1
+    assert data["meta"]["timezone"] == "UTC"
+    assert data["meta"]["subject_id"] == 1
     assert data["profile"]["email"] == ALICE_PII["email"]
     assert data["settings"]["language"] == "uk"
-    assert len(data["activity"]) == 2 and len(data["orders"]) == 1
+    assert len(data["activity"]) == 2
+    assert len(data["orders"]) == 1
     assert data["consents"] == []                  # передбачувана порожня структура
     json.dumps(data)                               # валідний JSON
 
@@ -38,17 +40,21 @@ def test_export_complete_for_own_data():
 def test_export_minimization_and_no_other_users():
     store = seed_demo_store()
     dump = json.dumps(build_personal_data_export(store, ALICE, 1, CID))
-    assert ALICE_PII["hash"] not in dump and ALICE_PII["reset"] not in dump
+    assert ALICE_PII["hash"] not in dump
+    assert ALICE_PII["reset"] not in dump
     body = dump.split('"excluded_fields"')[0]      # поза документованим переліком пропусків
     for field_name in ("password_hash", "reset_token", "is_flagged_fraud"):
         assert f'"{field_name}"' not in body
-    assert "bob@example.com" not in dump and "EXT-BOB-002" not in dump
+    assert "bob@example.com" not in dump
+    assert "EXT-BOB-002" not in dump
 
 
 def test_export_empty_categories_for_user_without_data():
     store = seed_demo_store()
     data = build_personal_data_export(store, ADMIN, 3, CID)
-    assert data["activity"] == [] and data["orders"] == [] and data["settings"] == {}
+    assert data["activity"] == []
+    assert data["orders"] == []
+    assert data["settings"] == {}
 
 
 def test_export_access_control():
@@ -62,7 +68,8 @@ def test_export_access_control():
 def test_export_audit_has_no_pii():
     store = seed_demo_store()
     build_personal_data_export(store, ALICE, 1, CID)
-    assert store.audit and ALICE_PII["email"] not in repr(store.audit)
+    assert store.audit
+    assert ALICE_PII["email"] not in repr(store.audit)
 
 
 # ------------------------------------------------------------ анонімізація
@@ -79,7 +86,8 @@ def test_anonymize_removes_pii_keeps_business_records_and_integrity():
     for value in _pii_values():
         assert value not in state, f"PII survived: {value}"
     assert len([o for o in store.orders if o.user_id == 1]) == 1  # RETAIN
-    assert store.orders[0].amount == 99.5 and store.orders[0].billing_name is None
+    assert store.orders[0].amount == 99.5
+    assert store.orders[0].billing_name is None
     assert all(o.user_id in store.users for o in store.orders)    # FK цілісні
     assert all(e.user_id in store.users for e in store.activity)
     assert all(c.user_id in store.users for c in store.consents)
@@ -112,7 +120,8 @@ def test_anonymize_is_atomic_on_failure():
     raises(RuntimeError, anonymize_user, store, ALICE, 1, CID)
     assert store.users[1].email == ALICE_PII["email"]            # відкат
     assert store.users[1].anonymized_at is None
-    assert 1 in store.settings and "token-alice" in store.tokens
+    assert 1 in store.settings
+    assert "token-alice" in store.tokens
     del store.add_audit                  # прибрати підміну
     assert anonymize_user(store, ALICE, 1, CID)["status"] == "anonymized"
 
@@ -122,8 +131,10 @@ def test_anonymized_emails_are_unique_and_not_reversible():
     anonymize_user(store, ALICE, 1, CID)
     anonymize_user(store, BOB, 2, CID)
     e1, e2 = store.users[1].email, store.users[2].email
-    assert e1 != e2 and e1.endswith("@anon.local")
-    assert "alice" not in e1 and "bob" not in e2
+    assert e1 != e2
+    assert e1.endswith("@anon.local")
+    assert "alice" not in e1
+    assert "bob" not in e2
 
 
 def test_audit_after_erasure_has_no_deleted_values():
@@ -169,8 +180,11 @@ def test_consent_idempotent_history_and_evidence():
     assert revoke_consent(store, ALICE, 1, "MARKETING_EMAIL", CID)["changed"] is False
     assert len(store.consents) == n                               # повторний REVOKE без нових записів
     rec = store.consents[0]
-    assert rec.policy_version == "2026-10" and rec.source == "mobile_app"
-    assert rec.granted_at and rec.withdrawn_at and rec.updated_at
+    assert rec.policy_version == "2026-10"
+    assert rec.source == "mobile_app"
+    assert rec.granted_at
+    assert rec.withdrawn_at
+    assert rec.updated_at
     grant_consent(store, ALICE, 1, "MARKETING_EMAIL", "2026-10", "web", CID)
     assert len(store.consents) == 2                               # історія, а не перезапис
 

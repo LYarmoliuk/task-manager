@@ -29,18 +29,21 @@ _SECRET_KEY_PARTS = (
     "api_key", "apikey", "api-key", "authorization", "cookie",
 )
 
-_SECRET_KV_RE = re.compile(
-    r"""(?P<key>["']?(?:password_hash|password|passwd|access_token|refresh_token|
-        reset_token|session_secret|api[_-]?key|secret|token|authorization)["']?)
-        (?P<sep>\s*[:=]\s*)
-        (?P<val>"[^"]*"|'[^']*'|Bearer\s+[^\s,;"']+|[^\s,;)}\]&"']+)""",
-    re.IGNORECASE | re.VERBOSE,
+_SECRET_WORDS = (
+    "password_hash", "password", "passwd", "access_token", "refresh_token",
+    "reset_token", "session_secret", r"api[_-]?key", "secret", "token", "authorization",
 )
-_BEARER_RE = re.compile(r"Bearer\s+[A-Za-z0-9._~+/=-]+", re.IGNORECASE)
+_SECRET_KV_RE = re.compile(
+    r"""(?P<key>["']?(?:""" + "|".join(_SECRET_WORDS) + r""")["']?)"""
+    r"""(?P<sep>\s*[:=]\s*)"""
+    r"""(?P<val>"[^"]*"|'[^']*'|Bearer\s+[^\s,;"']+|[^\s,;)}\]&"']+)""",
+    re.IGNORECASE,
+)
+_BEARER_RE = re.compile(r"Bearer\s+[a-z0-9._~+/=-]+", re.IGNORECASE)
 _TOKEN_LIKE_RE = re.compile(
     r"\b(?:ghp_[A-Za-z0-9]{20,}|sk_(?:live|test)_[A-Za-z0-9]{10,}|AKIA[0-9A-Z]{16})\b"
 )
-_EMAIL_RE = re.compile(r"([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})")
+_EMAIL_RE = re.compile(r"([A-Za-z0-9._%+-]{1,254})@((?:[A-Za-z0-9-]{1,63}\.)+[A-Za-z]{2,24})")
 _PHONE_RE = re.compile(r"(?<![\w*])\+?\d[\d\s().-]{7,}\d(?!\w)")
 
 
@@ -131,7 +134,7 @@ def sanitize_record(record: logging.LogRecord) -> logging.LogRecord:
     elif record.exc_text:
         record.exc_text = sanitize_text(record.exc_text)
 
-    for attr in list(record.__dict__):
+    for attr in record.__dict__:
         if attr not in _STANDARD_ATTRS and not attr.startswith("_"):
             record.__dict__[attr] = sanitize_obj(record.__dict__[attr], attr)
 

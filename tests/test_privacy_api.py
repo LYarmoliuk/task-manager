@@ -27,8 +27,10 @@ def test_export_own_data(env):
     r = client.get("/api/users/1/personal-data", headers=ALICE)
     assert r.status_code == 200
     body = r.json()
-    assert body["meta"]["schema_version"] == "1.0" and body["profile"]["email"] == ALICE_PII["email"]
-    assert len(body["activity"]) == 2 and len(body["orders"]) == 1
+    assert body["meta"]["schema_version"] == "1.0"
+    assert body["profile"]["email"] == ALICE_PII["email"]
+    assert len(body["activity"]) == 2
+    assert len(body["orders"]) == 1
     assert "password_hash" not in r.text.split('"excluded_fields"')[0]
     assert "X-Correlation-ID" in r.headers
 
@@ -61,7 +63,8 @@ def test_export_does_not_leak_pii_to_logs(env, caplog):
     text = " ".join(r.getMessage() for r in caplog.records)
     for value in ALICE_PII.values():
         assert value not in text
-    assert "Alice" not in text and "schema_version" not in text  # повний JSON не логується
+    assert "Alice" not in text
+    assert "schema_version" not in text  # повний JSON не логується
 
 
 def test_anonymize_flow_and_authorization(env):
@@ -70,7 +73,8 @@ def test_anonymize_flow_and_authorization(env):
     assert client.post("/api/users/1/anonymize", headers=BOB).status_code == 403
     assert store.users[1].email == ALICE_PII["email"]
     r = client.post("/api/users/1/anonymize", headers=ALICE)
-    assert r.status_code == 200 and r.json()["status"] == "anonymized"
+    assert r.status_code == 200
+    assert r.json()["status"] == "anonymized"
     assert client.post("/api/users/1/anonymize", headers=ADMIN).json()["status"] == "already_anonymized"
     export = client.get("/api/users/1/personal-data", headers=ADMIN).json()
     assert export["profile"]["email"] == "deleted-1@anon.local"
@@ -80,11 +84,14 @@ def test_anonymize_flow_and_authorization(env):
 def test_consent_flow_over_http(env):
     client, store = env
     send = lambda: client.post("/api/marketing/send/1", json={"campaign": "c1"}, headers=ADMIN)
-    assert send().json()["decision"] == "DENY" and store.outbox == []
+    assert send().json()["decision"] == "DENY"
+    assert store.outbox == []
     g = client.post("/api/users/1/consents/MARKETING_EMAIL/grant",
                     json={"policy_version": "2026-10", "source": "web"}, headers=ALICE)
-    assert g.status_code == 200 and g.json()["changed"] is True
-    assert send().json()["decision"] == "ALLOW" and len(store.outbox) == 1
+    assert g.status_code == 200
+    assert g.json()["changed"] is True
+    assert send().json()["decision"] == "ALLOW"
+    assert len(store.outbox) == 1
     assert client.post("/api/users/1/consents/MARKETING_EMAIL/revoke", headers=ALICE).json()["changed"] is True
     assert send().json() == {"sent": False, "decision": "DENY", "reason": "WITHDRAWN"}
     assert len(store.outbox) == 1

@@ -123,6 +123,9 @@ ALICE_PII = {
 }
 
 
+_DEMO_USER_AGENT = "Mozilla/5.0"
+
+
 def seed_demo_store() -> PrivacyStore:
     s = PrivacyStore()
     now = utcnow()
@@ -137,10 +140,10 @@ def seed_demo_store() -> PrivacyStore:
     s.settings[1] = UserSettings(1, "uk", "Europe/Kyiv", "dark")
     s.settings[2] = UserSettings(2, "en", "Europe/London", "light")
     s.activity += [
-        ActivityEvent(1, 1, "LOGIN", "203.0.113.10", "Mozilla/5.0", now,
+        ActivityEvent(1, 1, "LOGIN", "203.0.113.10", _DEMO_USER_AGENT, now,
                       {"note": "contact me at alice@example.com"}),
-        ActivityEvent(2, 1, "TASK_CREATED", "203.0.113.10", "Mozilla/5.0", now, {}),
-        ActivityEvent(3, 2, "LOGIN", "198.51.100.7", "Mozilla/5.0", now, {}),
+        ActivityEvent(2, 1, "TASK_CREATED", "203.0.113.10", _DEMO_USER_AGENT, now, {}),
+        ActivityEvent(3, 2, "LOGIN", "198.51.100.7", _DEMO_USER_AGENT, now, {}),
     ]
     s.orders += [
         Order(1, 1, 99.5, "UAH", "PAID", now, "Alice Tester", "Kyiv, Test St 1"),
