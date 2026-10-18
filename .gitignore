@@ -8,3 +8,5 @@ htmlcov/
 *.pyc
 .scannerwork/
 .env
+
+.mutmut-cache
