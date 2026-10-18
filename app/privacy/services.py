@@ -18,7 +18,8 @@ CONSENT_PURPOSES = frozenset({"MARKETING_EMAIL", "OPTIONAL_ANALYTICS"})
 
 # Мінімізація: ці поля НІКОЛИ не потрапляють в експорт (documented omission)
 EXCLUDED_FROM_EXPORT = {
-    "password_hash": "security-sensitive",  # NOSONAR: name in a deny-list, not a credential
+    # Field NAMES that must never be exported (a deny-list, not credentials).
+    "password_hash": "security-sensitive",  # NOSONAR
     "reset_token": "security-sensitive",
     "is_flagged_fraud": "internal antifraud flag",
     "auth_tokens": "integration/session secrets",
