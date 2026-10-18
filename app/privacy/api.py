@@ -93,7 +93,7 @@ def install_privacy(app: FastAPI) -> None:
     app.include_router(router)
 
     def _handler(status: int, detail: str):
-        async def handle(request: Request, exc: Exception):
+        def handle(request: Request, exc: Exception):
             return JSONResponse(status_code=status, content={"detail": detail})
         return handle
 
