@@ -24,6 +24,10 @@ def main() -> int:
     args = ap.parse_args()
 
     os.system("")  # вмикає ANSI-кольори в Windows-терміналі
+    # pre-commit перенаправляє stdout у канал, де Windows використовує cp1251/cp866 і кирилиця ламається
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     violations = []
     for name in args.files:
         path = Path(name)
