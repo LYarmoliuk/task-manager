@@ -1,31 +1,38 @@
-"""Строки зберігання персональних даних (днів) за категорією, юрисдикцією і активністю."""
+"""Строки зберігання персональних даних (днів): таблиці пошуку замість розгалужень."""
 
 DEFAULT_RETENTION_DAYS = 180
 
+# Найточніший ключ: (категорія, юрисдикція, активність)
+_BY_FULL_KEY = {
+    ("order", "UA", True): 1095,
+    ("order", "UA", False): 1095,
+    ("order", "EU", True): 2190,
+    ("order", "EU", False): 2190,
+    ("log", "EU", True): 90,
+    ("profile", "EU", True): 30,
+    ("profile", "EU", False): 30,
+}
+
+# Середній ключ: (категорія, активність)
+_BY_CATEGORY_ACTIVE = {
+    ("consent", True): 3650,
+    ("consent", False): 365,
+    ("profile", False): 30,
+    ("profile", True): 1095,
+    ("marketing", False): 0,
+}
+
+# Правило для всієї категорії
+_BY_CATEGORY = {
+    "order": 1825,
+    "log": 30,
+    "support": 365,
+    "backup": 2555,
+}
+
 
 def retention_days(category: str, jurisdiction: str, is_active: bool) -> int:
-    if category == "order":
-        if jurisdiction == "UA":
-            return 1095
-        elif jurisdiction == "EU":
-            return 2190
-        return 1825
-    elif category == "log":
-        if is_active and jurisdiction == "EU":
-            return 90
-        return 30
-    elif category == "consent":
-        if is_active:
-            return 3650
-        return 365
-    elif category == "profile":
-        if not is_active or jurisdiction == "EU":
-            return 30
-        return 1095
-    elif category == "support":
-        return 365
-    elif category == "marketing" and not is_active:
-        return 0
-    elif category == "backup":
-        return 2555
-    return DEFAULT_RETENTION_DAYS
+    return _BY_FULL_KEY.get(
+        (category, jurisdiction, is_active),
+        _BY_CATEGORY_ACTIVE.get((category, is_active), _BY_CATEGORY.get(category, DEFAULT_RETENTION_DAYS)),
+    )
