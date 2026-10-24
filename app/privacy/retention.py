@@ -22,4 +22,10 @@ def retention_days(category: str, jurisdiction: str, is_active: bool) -> int:
         if not is_active or jurisdiction == "EU":
             return 30
         return 1095
+    elif category == "support":
+        return 365
+    elif category == "marketing" and not is_active:
+        return 0
+    elif category == "backup":
+        return 2555
     return DEFAULT_RETENTION_DAYS
