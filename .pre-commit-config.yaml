@@ -6,3 +6,12 @@ repos:
         entry: gitleaks git --pre-commit --staged --redact --verbose
         language: system
         pass_filenames: false
+  
+  - repo: local
+    hooks:
+      - id: complexity-gate
+        name: complexity-gate (CC <= 10)
+        entry: python scripts/complexity_gate.py
+        language: python
+        additional_dependencies: ["radon==6.0.1"]
+        types: [python]
