@@ -1,7 +1,9 @@
-"""Краш-тест: мутабельне замовлення ламається при повторній спробі оплати (FAIL-стан)."""
+"""Імутабельність: повторна оплата дає ту саму суму, замовлення не змінюється (PASS-стан)."""
+from dataclasses import FrozenInstanceError
+
 import pytest
 
-from app.payments import PaymentError, charge_order
+from app.payments import Order, PaymentError, charge_order
 
 RATES = {"USD": 41.0}
 
@@ -17,7 +19,7 @@ class FakeGateway:
 
 
 def make_order():
-    return {"amount": 100, "currency": "USD", "discount_pct": 10, "tax_pct": 20, "shipping": 50}
+    return Order(100, "USD", 10, 20, 50)
 
 
 def test_retry_after_decline_charges_same_amount():
@@ -32,6 +34,11 @@ def test_retry_after_decline_charges_same_amount():
 
 def test_charge_does_not_modify_callers_order():
     order = make_order()
-    before = dict(order)
     charge_order(FakeGateway(["ok"]), order, "cust-1", "tkn-1", RATES)
-    assert order == before, f"метод перезаписав вхідне замовлення: {before} -> {order}"
+    assert order == make_order(), f"метод змінив вхідне замовлення: {order}"
+
+
+def test_order_is_frozen():
+    order = make_order()
+    with pytest.raises(FrozenInstanceError):
+        order.amount = 1

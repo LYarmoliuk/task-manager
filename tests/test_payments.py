@@ -1,6 +1,6 @@
 import pytest
 
-from app.payments import BASE_CURRENCY, PaymentError, charge_order
+from app.payments import BASE_CURRENCY, Order, PaymentError, charge_order
 
 RATES = {"USD": 41.0, "EUR": 45.5}
 
@@ -16,8 +16,7 @@ class FakeGateway:
 
 
 def make_order(amount, currency="UAH", discount_pct=0, tax_pct=0, shipping=0):
-    return {"amount": amount, "currency": currency, "discount_pct": discount_pct,
-            "tax_pct": tax_pct, "shipping": shipping}
+    return Order(amount, currency, discount_pct, tax_pct, shipping)
 
 
 @pytest.mark.parametrize(
