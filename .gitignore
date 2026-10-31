@@ -8,3 +8,4 @@ htmlcov/
 *.pyc
 .scannerwork/
 .env
+reports/
