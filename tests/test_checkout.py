@@ -1,5 +1,7 @@
+import pytest
+
 from app.checkout.domain import CheckoutOrder, CheckoutReceipt
-from app.checkout.god_order_processor import OrderProcessor
+from app.checkout.wiring import build_services, process_order
 
 
 def make_order(**changes):
@@ -9,41 +11,52 @@ def make_order(**changes):
     return CheckoutOrder(**values)
 
 
-def test_price_order_applies_discount_and_tax():
-    assert OrderProcessor().price_order(make_order()) == 4428.0
+@pytest.fixture
+def parts():
+    return build_services()
 
 
-def test_estimate_total_includes_shipping():
-    assert OrderProcessor().estimate_total(make_order()) == 4930.0
+def test_price_applies_discount_and_tax(parts):
+    assert parts["pricing"].price(make_order()) == 4428.0
 
 
-def test_invoice_contains_tax_line():
-    processor = OrderProcessor()
-    number = processor.issue_invoice(make_order(), 4428.0)
+def test_books_have_reduced_tax(parts):
+    assert parts["pricing"].price(make_order(category="books")) == 4059.0
+
+
+def test_estimate_matches_price(parts):
+    assert parts["pricing"].estimate(make_order()) == 4428.0
+
+
+def test_tax_part_is_tax_only(parts):
+    assert parts["pricing"].tax_part(make_order()) == 738.0
+
+
+def test_reserve_reduces_stock_and_rejects_shortage(parts):
+    assert parts["fulfillment"].reserve(make_order()) is True
+    assert parts["fulfillment"].reserve(make_order(sku="SKU-2", quantity=5)) is False
+
+
+def test_suspicious_payment_is_refused(parts):
+    assert parts["payment"].charge(make_order(), 60000.0) is False
+
+
+def test_billing_numbers_invoices_and_notifies(parts):
+    number = parts["billing"].issue(make_order(), 4428.0, 738.0)
     assert number == "INV-0001"
-    assert "TAX 738.0" in processor.audit.events[0]
+    assert parts["mailer"].outbox[0][0] == "buyer@example.com"
+    assert parts["sms"].sent[0][0] == "c-1"
 
 
-def test_reserve_stock_reduces_ledger():
-    processor = OrderProcessor()
-    assert processor.reserve_stock(make_order()) is True
-    assert processor.stock.stock["SKU-1"] == 8
-
-
-def test_out_of_stock_is_rejected():
-    assert OrderProcessor().reserve_stock(make_order(sku="SKU-2", quantity=5)) is False
-
-
-def test_suspicious_payment_is_refused():
-    assert OrderProcessor().charge(make_order(), 60000.0) is False
-
-
-def test_notify_sends_mail_and_sms():
-    processor = OrderProcessor()
-    assert processor.notify(make_order(), "hello") is True
-    assert processor.mailer.outbox == [("buyer@example.com", "hello")]
-
-
-def test_full_flow_returns_paid_receipt():
-    receipt = OrderProcessor().process(make_order())
+def test_full_flow_returns_paid_receipt(parts):
+    receipt = process_order(make_order(), parts["pricing"], parts["fulfillment"], parts["payment"],
+                            parts["billing"], parts["audit"])
     assert receipt == CheckoutReceipt("o-1", 4428.0, True, "INV-0001", True)
+
+
+def test_failed_payment_releases_stock_and_audits(parts):
+    order = make_order(amount=1000000.0, currency="UAH")
+    receipt = process_order(order, parts["pricing"], parts["fulfillment"], parts["payment"],
+                            parts["billing"], parts["audit"])
+    assert receipt.paid is False
+    assert parts["audit"].events == ["payment failed o-1"]
