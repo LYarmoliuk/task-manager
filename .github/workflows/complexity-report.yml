@@ -1,0 +1,51 @@
+name: complexity-report
+
+# Хмарний збір метрик якості: складність (radon JSON, lizard CSV) + churn з Git.
+# Запускається на кожен push і Pull Request, працює в Docker-контейнері python:3.13.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  complexity:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.13
+    steps:
+      - name: Checkout (повна історія для churn)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Дозволити git у контейнері
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Встановити CLI-сканери
+        run: pip install radon==6.0.1 lizard==1.24.1
+
+      - name: Звіти складності (JSON та CSV)
+        run: |
+          mkdir -p reports
+          radon cc app -j > reports/radon-cc.json
+          radon hal app -j > reports/radon-hal.json
+          radon mi app -j > reports/radon-mi.json
+          lizard app -l python --csv > reports/lizard.csv
+
+      - name: Churn Rate за 90 днів (Git CLI)
+        run: |
+          git log --since="90 days ago" --format=format: --name-only | grep -Ev '^$' | sort | uniq -c | sort -nr > reports/churn.txt
+          head -25 reports/churn.txt
+
+      - name: Матриця Hotspots
+        run: |
+          python scripts/hotspot_matrix.py --cc reports/radon-cc.json --hal reports/radon-hal.json --since "90 days ago" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Зберегти артефакт збірки
+        uses: actions/upload-artifact@v4
+        with:
+          name: complexity-reports
+          path: reports/
+          if-no-files-found: error
