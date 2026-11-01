@@ -4,8 +4,9 @@
 class RegionTaxTable:
     RATES = {"UA": 0.2, "DE": 0.19, "US": 0.07}
 
-    def rate_for(self, region):
-        return self.RATES.get(region, 0.0)
+    def rate_for(self, region, category):
+        rate = self.RATES.get(region, 0.0)
+        return rate / 2 if category == "books" else rate
 
 
 class VolumeDiscountPolicy:
