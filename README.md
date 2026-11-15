@@ -41,3 +41,7 @@ python main.py
 3. Вивчіть архітектуру: [SDD](docs/sdd.md); рішення — `docs/architecture/adr/`.
 4. Розгортання та CI/CD: [ISD](docs/isd.md).
 5. Правила супроводу: [docs/maintenance.md](docs/maintenance.md) (зміна коду = зміна документації).
+
+## API
+
+- `GET /api/v2/stats` — повертає статистику (версія 2). TTL кешу задається змінною `STATS_V2_TTL` (за замовчуванням 60).

@@ -23,6 +23,8 @@
 | `SONAR_TOKEN` | `scripts/sonar_api.py` | секрет — значення не фіксується |
 | `SONAR_URL` | `lab9_work/scripts/sonar_sqale.py` | див. `.env.example` |
 
+Додаткова змінна: `STATS_V2_TTL` (TTL кешу `GET /api/v2/stats`, за замовчуванням 60; не секрет).
+
 ## 4. Сховища даних
 
 - окремих сховищ не виявлено
@@ -89,3 +91,5 @@
 ### validators
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
 
+### lab10_stats_v2
+Читає `STATS_V2_TTL`; запускається разом із застосунком: `pip install -r requirements.txt  &&  python main.py`.

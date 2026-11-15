@@ -11,8 +11,10 @@ C4Container
     Person(user, "Користувач", "Працює із задачами")
     System_Boundary(sys, "task-manager") {
         Container(app, "Застосунок", "FastAPI", "Основна логіка")
-        %% LAB10-EXTEND
+        Container(stats_v2, "Stats v2 endpoint", "FastAPI", "GET /api/v2/stats (нова поведінка)")
+        % LAB10-EXTEND
     }
+    Rel(user, stats_v2, "GET /api/v2/stats")
     Rel(user, app, "HTTP / повідомлення")
 ```
 
@@ -96,3 +98,13 @@ erDiagram
 - `services` викликає публічні функції `models` (in-process)
 - `services` викликає публічні функції `validators` (in-process)
 - `validators` викликає публічні функції `models` (in-process)
+
+### Оновлення: Stats v2
+
+| Компонент | Відповідальність | Взаємодіє з | Розгортання (ISD) |
+|---|---|---|---|
+| lab10_stats_v2 | Віддає статистику за `GET /api/v2/stats`; читає `STATS_V2_TTL` | [checkout](#checkout) | [isd.md](isd.md#lab10_stats_v2) |
+
+| Метод | Шлях | Компонент-власник | Файл |
+|---|---|---|---|
+| GET | `/api/v2/stats` | lab10_stats_v2 | `app/main.py` |
