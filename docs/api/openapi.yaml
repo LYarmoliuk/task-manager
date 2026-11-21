@@ -71,11 +71,17 @@ paths:
                 status: todo
         '400':
           description: Invalid task data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                detail: Invalid task data
         '422':
           description: Помилка валідації вхідних даних.
           content:
             application/json:
-              schema: &id001
+              schema:
                 $ref: '#/components/schemas/Error'
               example:
                 detail:
@@ -124,14 +130,16 @@ paths:
           description: Задачу не знайдено.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail: Task not found
         '422':
           description: Помилка валідації вхідних даних.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail:
                 - loc:
@@ -176,14 +184,16 @@ paths:
           description: Задачу не знайдено.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail: Task not found
         '422':
           description: Помилка валідації вхідних даних.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail:
                 - loc:
@@ -238,14 +248,16 @@ paths:
           description: Задачу не знайдено.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail: Task not found
         '422':
           description: Помилка валідації вхідних даних.
           content:
             application/json:
-              schema: *id001
+              schema:
+                $ref: '#/components/schemas/Error'
               example:
                 detail:
                 - loc:
@@ -291,32 +303,6 @@ paths:
         60).'
 components:
   schemas:
-    ConsentCommand:
-      properties:
-        policy_version:
-          type: string
-          title: Policy Version
-          default: 2026-10
-        source:
-          type: string
-          title: Source
-          default: api
-      type: object
-      title: ConsentCommand
-      example:
-        policy_version: приклад
-        source: web
-    MarketingCommand:
-      properties:
-        campaign:
-          type: string
-          title: Campaign
-      type: object
-      required:
-      - campaign
-      title: MarketingCommand
-      example:
-        campaign: autumn-sale
     Task:
       properties:
         id:
