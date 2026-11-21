@@ -1,0 +1,424 @@
+# Контракт API — єдине джерело істини. Чернетку згенеровано з коду (lab11_run.py), далі файл
+# редагується вручну; відповідність живому API охороняє contract-тест (lab11_run.py 2).
+openapi: 3.1.0
+info:
+  title: Task Manager API
+  version: 1.0.0
+  description: 'REST-контракт task-manager (джерело істини; SemVer: MAJOR — ламаюча зміна, MINOR — нові ендпоінти,
+    PATCH — виправлення опису).'
+  contact:
+    name: LYarmoliuk
+servers:
+- url: http://127.0.0.1:8000
+  description: Локальний запуск (uvicorn)
+tags:
+- name: tasks
+  description: Керування задачами.
+- name: stats
+  description: Статистика (додано в краш-тесті ЛР№10).
+paths:
+  /tasks:
+    get:
+      summary: Get Tasks
+      operationId: get_tasks_tasks_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Task'
+                type: array
+                title: Response Get Tasks Tasks Get
+              example:
+              - id: 1
+                title: Підготувати звіт з аудиту
+                description: Зібрати метрики та оформити висновки
+                priority: low
+                status: todo
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - tasks
+      description: Повертає список усіх задач.
+    post:
+      summary: Create Task
+      operationId: create_task_tasks_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Підготувати звіт з аудиту
+                description: Зібрати метрики та оформити висновки
+                priority: low
+                status: todo
+        '400':
+          description: Invalid task data
+        '422':
+          description: Помилка валідації вхідних даних.
+          content:
+            application/json:
+              schema: &id001
+                $ref: '#/components/schemas/Error'
+              example:
+                detail:
+                - loc:
+                  - body
+                  - title
+                  msg: Field required
+                  type: missing
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - tasks
+      description: Створює нову задачу за переданими полями; повертає створену задачу з ідентифікатором.
+  /tasks/{task_id}:
+    get:
+      summary: Get Task
+      operationId: get_task_tasks__task_id__get
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Task Id
+        description: Ідентифікатор задачі.
+        example: 1
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Підготувати звіт з аудиту
+                description: Зібрати метрики та оформити висновки
+                priority: low
+                status: todo
+        '404':
+          description: Задачу не знайдено.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail: Task not found
+        '422':
+          description: Помилка валідації вхідних даних.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail:
+                - loc:
+                  - body
+                  - title
+                  msg: Field required
+                  type: missing
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - tasks
+      description: Повертає задачу за ідентифікатором; 404, якщо задачі не існує.
+    delete:
+      summary: Delete Task
+      operationId: delete_task_tasks__task_id__delete
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Task Id
+        description: Ідентифікатор задачі.
+        example: 1
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                title: Response Delete Task Tasks  Task Id  Delete
+              example: {}
+        '404':
+          description: Задачу не знайдено.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail: Task not found
+        '422':
+          description: Помилка валідації вхідних даних.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail:
+                - loc:
+                  - body
+                  - title
+                  msg: Field required
+                  type: missing
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - tasks
+      description: Видаляє задачу за ідентифікатором; 404, якщо задачі не існує.
+  /tasks/{task_id}/status:
+    patch:
+      summary: Update Task Status
+      operationId: update_task_status_tasks__task_id__status_patch
+      parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Task Id
+        description: Ідентифікатор задачі.
+        example: 1
+      - name: status
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/TaskStatus'
+        description: status
+        example: todo
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Підготувати звіт з аудиту
+                description: Зібрати метрики та оформити висновки
+                priority: low
+                status: todo
+        '404':
+          description: Задачу не знайдено.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail: Task not found
+        '422':
+          description: Помилка валідації вхідних даних.
+          content:
+            application/json:
+              schema: *id001
+              example:
+                detail:
+                - loc:
+                  - body
+                  - title
+                  msg: Field required
+                  type: missing
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - tasks
+      description: Змінює статус задачі; 404, якщо задачі не існує, 422 — для некоректного статусу.
+  /api/v2/stats:
+    get:
+      summary: Lab10 Stats V2
+      operationId: lab10_stats_v2_api_v2_stats_get
+      responses:
+        '200':
+          description: Статистика.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsV2'
+              example:
+                version: 2
+                ttl: 60
+                source: lab10-crash-test
+        '500':
+          description: Внутрішня помилка сервера (відповідь не JSON, а text/plain — так фактично відповідає Starlette).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Internal Server Error
+      tags:
+      - stats
+      description: 'Повертає статистику версії 2: TTL кешу береться зі змінної середовища STATS_V2_TTL (за замовчуванням
+        60).'
+components:
+  schemas:
+    ConsentCommand:
+      properties:
+        policy_version:
+          type: string
+          title: Policy Version
+          default: 2026-10
+        source:
+          type: string
+          title: Source
+          default: api
+      type: object
+      title: ConsentCommand
+      example:
+        policy_version: приклад
+        source: web
+    MarketingCommand:
+      properties:
+        campaign:
+          type: string
+          title: Campaign
+      type: object
+      required:
+      - campaign
+      title: MarketingCommand
+      example:
+        campaign: autumn-sale
+    Task:
+      properties:
+        id:
+          type: integer
+          title: Id
+        title:
+          type: string
+          title: Title
+        description:
+          type: string
+          title: Description
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+          default: todo
+      type: object
+      required:
+      - id
+      - title
+      - description
+      - priority
+      title: Task
+      example:
+        id: 1
+        title: Підготувати звіт з аудиту
+        description: Зібрати метрики та оформити висновки
+        priority: low
+        status: todo
+    TaskCreate:
+      properties:
+        title:
+          type: string
+          maxLength: 100
+          minLength: 3
+          title: Title
+        description:
+          type: string
+          maxLength: 500
+          title: Description
+          default: ''
+        priority:
+          $ref: '#/components/schemas/TaskPriority'
+          default: medium
+      type: object
+      required:
+      - title
+      title: TaskCreate
+      example:
+        title: Підготувати звіт з аудиту
+        description: Зібрати метрики та оформити висновки
+        priority: low
+    TaskPriority:
+      type: string
+      enum:
+      - low
+      - medium
+      - high
+      title: TaskPriority
+      example: low
+    TaskStatus:
+      type: string
+      enum:
+      - todo
+      - in_progress
+      - done
+      title: TaskStatus
+      example: todo
+    Error:
+      type: object
+      required:
+      - detail
+      description: Спільний формат помилки (FastAPI HTTPException / помилка валідації).
+      properties:
+        detail:
+          description: Повідомлення або список помилок валідації.
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: object
+      example:
+        detail: Task not found
+    StatsV2:
+      type: object
+      required:
+      - version
+      - ttl
+      - source
+      description: Статистика v2.
+      properties:
+        version:
+          type: integer
+          example: 2
+        ttl:
+          type: integer
+          example: 60
+          description: TTL кешу, сек (STATS_V2_TTL).
+        source:
+          type: string
+          example: lab10-crash-test
+      example:
+        version: 2
+        ttl: 60
+        source: lab10-crash-test

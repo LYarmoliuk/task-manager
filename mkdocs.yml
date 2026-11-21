@@ -44,6 +44,9 @@ nav:
       - "Privacy lab: як підключити": developer/privacy.md
   - "Рівень 3 · API":
       - "API Docs": api/index.md
+      - "Довідник API (Swagger UI)": api/openapi.md
+      - "Клієнтський SDK": api/sdk.md
+      - "Довідник з docstring (mkdocstrings)": api/reference.md
   - "Рівень 4 · Архітектура":
       - "Architecture Docs": architecture/index.md
       - "SDD — System Design Document": architecture/sdd.md
@@ -64,6 +67,16 @@ plugins:
       locale: uk
       fallback_to_build_date: true
   - mermaid2
+  - swagger-ui-tag
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_if_no_docstring: true
 
 markdown_extensions:
   - admonition
