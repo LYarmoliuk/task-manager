@@ -1,3 +1,9 @@
+---
+owner: "@LYarmoliuk"
+status: in-review
+review_date: 2027-05-20
+tags: [architecture]
+---
 # SDD — System Design Document
 
 > Проєкт: **task-manager**. Сформовано 2026-11-15. Мова: Python; фреймворк: FastAPI.
@@ -12,7 +18,6 @@ C4Container
     System_Boundary(sys, "task-manager") {
         Container(app, "Застосунок", "FastAPI", "Основна логіка")
         Container(stats_v2, "Stats v2 endpoint", "FastAPI", "GET /api/v2/stats (нова поведінка)")
-        % LAB10-EXTEND
     }
     Rel(user, stats_v2, "GET /api/v2/stats")
     Rel(user, app, "HTTP / повідомлення")
@@ -25,13 +30,13 @@ C4Container
 | checkout | Оформлення замовлення (лабораторна 8) | — | [isd.md](isd.md#checkout) |
 | config | Модуль `config` (відповідальність уточнити вручну) | — | [isd.md](isd.md#config) |
 | dependency | Модуль `dependency` (відповідальність уточнити вручну) | — | [isd.md](isd.md#dependency) |
-| main | Модуль `main` (відповідальність уточнити вручну) | [dependency](#dependency), [models](#models), [privacy](#privacy), [services](#services) | [isd.md](isd.md#main) |
+| main | Модуль `main` (відповідальність уточнити вручну) | [dependency](isd.md#dependency), [models](isd.md#models), [privacy](isd.md#privacy), [services](isd.md#services) | [isd.md](isd.md#main) |
 | models | Модуль `models` (відповідальність уточнити вручну) | — | [isd.md](isd.md#models) |
 | payments | Оплата замовлення через платіжний шлюз: незмінні Value Objects | — | [isd.md](isd.md#payments) |
 | privacy | Модуль `privacy` (відповідальність уточнити вручну) | — | [isd.md](isd.md#privacy) |
 | reporting | Експортери звітів (лабораторна 8) | — | [isd.md](isd.md#reporting) |
-| services | Модуль `services` (відповідальність уточнити вручну) | [models](#models), [validators](#validators) | [isd.md](isd.md#services) |
-| validators | Модуль `validators` (відповідальність уточнити вручну) | [models](#models) | [isd.md](isd.md#validators) |
+| services | Модуль `services` (відповідальність уточнити вручну) | [models](isd.md#models), [validators](isd.md#validators) | [isd.md](isd.md#services) |
+| validators | Модуль `validators` (відповідальність уточнити вручну) | [models](isd.md#models) | [isd.md](isd.md#validators) |
 
 ### Залежності між компонентами (з імпортів)
 
@@ -76,18 +81,18 @@ erDiagram
 
 | Метод | Шлях | Компонент-власник | Файл |
 |---|---|---|---|
-| GET | `/tasks` | checkout | `app/main.py` |
-| GET | `/tasks/{task_id}` | checkout | `app/main.py` |
-| POST | `/tasks` | checkout | `app/main.py` |
-| PATCH | `/tasks/{task_id}/status` | checkout | `app/main.py` |
-| DELETE | `/tasks/{task_id}` | checkout | `app/main.py` |
-| GET | `/dependency/raw` | checkout | `app/main.py` |
-| GET | `/dependency/resilient` | checkout | `app/main.py` |
-| GET | `/api/users/{user_id}/personal-data` | checkout | `app/privacy/api.py` |
-| POST | `/api/users/{user_id}/anonymize` | checkout | `app/privacy/api.py` |
-| POST | `/api/users/{user_id}/consents/{purpose}/grant` | checkout | `app/privacy/api.py` |
-| POST | `/api/users/{user_id}/consents/{purpose}/revoke` | checkout | `app/privacy/api.py` |
-| POST | `/api/marketing/send/{user_id}` | checkout | `app/privacy/api.py` |
+| GET | `/tasks` | main | `app/main.py` |
+| GET | `/tasks/{task_id}` | main | `app/main.py` |
+| POST | `/tasks` | main | `app/main.py` |
+| PATCH | `/tasks/{task_id}/status` | main | `app/main.py` |
+| DELETE | `/tasks/{task_id}` | main | `app/main.py` |
+| GET | `/dependency/raw` | main | `app/main.py` |
+| GET | `/dependency/resilient` | main | `app/main.py` |
+| GET | `/api/users/{user_id}/personal-data` | privacy | `app/privacy/api.py` |
+| POST | `/api/users/{user_id}/anonymize` | privacy | `app/privacy/api.py` |
+| POST | `/api/users/{user_id}/consents/{purpose}/grant` | privacy | `app/privacy/api.py` |
+| POST | `/api/users/{user_id}/consents/{purpose}/revoke` | privacy | `app/privacy/api.py` |
+| POST | `/api/marketing/send/{user_id}` | privacy | `app/privacy/api.py` |
 
 ### Контракти між компонентами
 
@@ -103,8 +108,18 @@ erDiagram
 
 | Компонент | Відповідальність | Взаємодіє з | Розгортання (ISD) |
 |---|---|---|---|
-| lab10_stats_v2 | Віддає статистику за `GET /api/v2/stats`; читає `STATS_V2_TTL` | [checkout](#checkout) | [isd.md](isd.md#lab10_stats_v2) |
+| lab10_stats_v2 | Віддає статистику за `GET /api/v2/stats`; читає `STATS_V2_TTL` | [checkout](isd.md#checkout) | [isd.md](isd.md#lab10_stats_v2) |
 
 | Метод | Шлях | Компонент-власник | Файл |
 |---|---|---|---|
 | GET | `/api/v2/stats` | lab10_stats_v2 | `app/main.py` |
+
+## Пов'язані документи
+
+- [[isd]]
+- [[0001-choice-of-language-and-framework]]
+- [[0002-choice-of-data-store-or-integration]]
+- [[environment]]
+- [[api/index]]
+
+**Теги:** #architecture

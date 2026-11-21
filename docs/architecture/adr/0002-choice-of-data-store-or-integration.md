@@ -1,3 +1,10 @@
+---
+owner: "@LYarmoliuk"
+status: published
+review_date: 2027-05-14
+tags: [architecture]
+adr_status: Accepted
+---
 # ADR-0002: Стиль інтеграції
 
 - Статус: **accepted**
@@ -18,3 +25,10 @@
 - (+) простіше підтримувати
 - (−) обмеження масштабування; перегляд при зростанні навантаження
 - Зміна рішення — новим ADR зі статусом superseded для цього.
+
+## Пов'язані документи
+
+- [[sdd]]
+- [[api/index]]
+
+**Теги:** #architecture

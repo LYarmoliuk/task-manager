@@ -9,3 +9,8 @@ htmlcov/
 .scannerwork/
 .env
 reports/
+
+# Documentation as Code
+site/
+sdk/
+lab11_out/

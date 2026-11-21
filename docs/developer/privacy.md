@@ -1,6 +1,12 @@
+---
+owner: "@LYarmoliuk"
+status: published
+review_date: 2027-02-19
+tags: [ops]
+---
 # Privacy lab: як підключити
 
-1. Скопіюйте в проєкт (зберігаючи структуру): `app/privacy/`, `tests/test_privacy_*.py`, `docs/pii_inventory.md`.
+1. Скопіюйте в проєкт (зберігаючи структуру): `app/privacy/`, `tests/test_privacy_*.py`, `docs/developer/pii_inventory.md`.
 2. В кінець `app/main.py` додайте:
 
 ```python
@@ -17,3 +23,10 @@ curl.exe -H "Authorization: Bearer token-alice" http://127.0.0.1:8000/api/users/
 curl.exe -H "Authorization: Bearer token-bob"   http://127.0.0.1:8000/api/users/1/personal-data   # 403 gitleaks:allow
 curl.exe -X POST -H "Authorization: Bearer token-alice" http://127.0.0.1:8000/api/users/1/anonymize   # gitleaks:allow (синтетичний демо-токен)
 ```
+
+## Пов'язані документи
+
+- [[pii_inventory]]
+- [[sdd]]
+
+**Теги:** #ops

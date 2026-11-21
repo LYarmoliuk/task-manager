@@ -29,18 +29,18 @@ A simple REST API for task management.
 git clone <repo-url>
 cd task-manager
 pip install -r requirements.txt
-python main.py
+uvicorn app.main:app --reload
 ```
 
-Конфігурація: скопіюйте `.env.example` у `.env`. Деталі середовищ — [ISD](docs/isd.md).
+Конфігурація: скопіюйте `.env.example` у `.env`. Деталі середовищ — [ISD](docs/architecture/isd.md).
 
 ## Онбординг нового розробника
 
 1. Прочитайте розділ «Призначення» вище.
 2. Запустіть систему за «Швидким стартом».
-3. Вивчіть архітектуру: [SDD](docs/sdd.md); рішення — `docs/architecture/adr/`.
-4. Розгортання та CI/CD: [ISD](docs/isd.md).
-5. Правила супроводу: [docs/maintenance.md](docs/maintenance.md) (зміна коду = зміна документації).
+3. Вивчіть архітектуру: [SDD](docs/architecture/sdd.md); рішення — `docs/architecture/adr/`.
+4. Розгортання та CI/CD: [ISD](docs/architecture/isd.md).
+5. Правила супроводу: [docs/architecture/maintenance.md](docs/architecture/maintenance.md) (зміна коду = зміна документації).
 
 ## API
 

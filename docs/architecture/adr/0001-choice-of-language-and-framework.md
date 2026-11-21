@@ -1,3 +1,10 @@
+---
+owner: "@LYarmoliuk"
+status: published
+review_date: 2027-05-14
+tags: [architecture]
+adr_status: Accepted
+---
 # ADR-0001: Вибір мови та фреймворку
 
 - Статус: **accepted**
@@ -18,3 +25,9 @@
 - (+) швидкий старт і зрозуміла підтримка
 - (−) залежність від екосистеми та її версій
 - Зміна рішення — новим ADR; цей запис отримає статус superseded.
+
+## Пов'язані документи
+
+- [[sdd]]
+
+**Теги:** #architecture

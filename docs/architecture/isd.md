@@ -1,3 +1,9 @@
+---
+owner: "@LYarmoliuk"
+status: published
+review_date: 2027-05-20
+tags: [architecture]
+---
 # ISD — Infrastructure Specification Document
 
 > Проєкт: **task-manager**. Сформовано 2026-11-15. Дизайн системи — [SDD](sdd.md).
@@ -5,13 +11,13 @@
 ## 1. Топологія розгортання
 
 Поточна топологія: **локальна (процес на машині розробника)**.
-Команда запуску: `pip install -r requirements.txt  &&  python main.py`
+Команда запуску: `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`
 
 ## 2. Середовища
 
 | Середовище | Як запускається | Сховище | Конфігурація |
 |---|---|---|---|
-| dev | `pip install -r requirements.txt  &&  python main.py` | — | локальний `.env` |
+| dev | `pip install -r requirements.txt  &&  uvicorn app.main:app --reload` | — | локальний `.env` |
 | test | CI-конвеєр (complexity-report, secret-scan) | тимчасове/in-memory | змінні CI |
 | production | не розгорнуто (навчальний проєкт) — цільова: контейнерна | — | секрети в менеджері секретів |
 
@@ -56,40 +62,49 @@
 ## 7. Відкат релізу
 
 1. `git revert <merge-commit>` або повернення попереднього тегу/образу.
-2. Повторний запуск: `pip install -r requirements.txt  &&  python main.py`.
+2. Повторний запуск: `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`.
 3. Відновлення даних зі знімка в межах RPO.
 
 ## 8. Розгортання компонентів
 
 ### checkout
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### config
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### dependency
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### main
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### models
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### payments
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### privacy
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### reporting
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### services
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### validators
-Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  python main.py`. Опис: [SDD](sdd.md).
+Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### lab10_stats_v2
-Читає `STATS_V2_TTL`; запускається разом із застосунком: `pip install -r requirements.txt  &&  python main.py`.
+Читає `STATS_V2_TTL`; запускається разом із застосунком: `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`.
+
+## Пов'язані документи
+
+- [[sdd]]
+- [[0003-documentation-as-code-mkdocs]]
+- [[environment]]
+- [[maintenance]]
+
+**Теги:** #architecture
