@@ -24,3 +24,4 @@ tags: [ops]
 - [[architecture/index]]
 
 **Теги:** #ops
+- [Інструкція з деплою (LAB11-DEFECT)](deploy-guide.md)
