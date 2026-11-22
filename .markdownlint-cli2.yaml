@@ -8,6 +8,7 @@ config:
     siblings_only: true # однакові заголовки допустимі в різних розділах
   MD036: false
   MD025: false
+  MD029: false
 ignores:
   - "sdk/**"
   - "site/**"
