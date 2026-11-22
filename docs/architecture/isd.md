@@ -38,12 +38,14 @@ tags: [architecture]
 ## 5. CI/CD
 
 ### `.github/workflows/complexity-report.yml`
+
 - Тригери: pull_request, push
 - Jobs: complexity
 - Стадії (steps): Checkout (повна історія для churn); Дозволити git у контейнері; Встановити CLI-сканери; Звіти складності (JSON та CSV); Churn Rate за 90 днів (Git CLI); Матриця Hotspots; Зберегти артефакт збірки
 - Quality Gates: не виявлено
 
 ### `.github/workflows/secret-scan.yml`
+
 - Тригери: pull_request, push
 - Jobs: gitleaks
 - Стадії (steps): —
@@ -68,36 +70,47 @@ tags: [architecture]
 ## 8. Розгортання компонентів
 
 ### checkout
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### config
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### dependency
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### main
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### models
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### payments
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### privacy
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### reporting
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### services
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### validators
+
 Входить до процесу застосунку; запускається командою `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`. Опис: [SDD](sdd.md).
 
 ### lab10_stats_v2
+
 Читає `STATS_V2_TTL`; запускається разом із застосунком: `pip install -r requirements.txt  &&  uvicorn app.main:app --reload`.
 
 ## Пов'язані документи
