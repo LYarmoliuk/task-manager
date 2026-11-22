@@ -1,8 +1,9 @@
 ---
 owner: "@LYarmoliuk"
-status: published
 review_date: 2027-05-20
 tags: [architecture]
+status: deprecated
+superseded_by: developer/CONTRIBUTING.md
 ---
 # Регламент підтримки документації
 
