@@ -67,16 +67,6 @@ plugins:
       locale: uk
       fallback_to_build_date: true
   - mermaid2
-  - swagger-ui-tag
-  - mkdocstrings:
-      handlers:
-        python:
-          paths: [.]
-          options:
-            docstring_style: google
-            show_source: false
-            show_root_heading: true
-            show_if_no_docstring: true
 
 markdown_extensions:
   - admonition
