@@ -1,0 +1,95 @@
+# Документація як код (ЛР№11). Збірка: mkdocs build --strict
+site_name: task-manager — база знань
+site_description: Корпоративна база знань проєкту task-manager
+site_url: https://lyarmoliuk.github.io/task-manager/
+repo_url: https://github.com/LYarmoliuk/task-manager
+edit_uri: edit/main/docs/
+docs_dir: docs
+site_dir: site
+strict: false
+
+theme:
+  name: material
+  language: uk
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - search.highlight
+    - toc.follow
+
+hooks:
+  - hooks/wikilinks.py
+  - hooks/deprecation.py
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+    absolute_links: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+    anchors: warn
+
+nav:
+  - "Головна": index.md
+  - "Рівень 2 · Розробка":
+      - "Developer Docs": developer/index.md
+      - "Правила внеску (CONTRIBUTING)": developer/CONTRIBUTING.md
+      - "Локальне середовище": developer/environment.md
+      - "Стандарти коду": developer/standards.md
+      - "PII inventory (підготовчий етап)": developer/pii_inventory.md
+      - "Privacy lab: як підключити": developer/privacy.md
+  - "Рівень 3 · API":
+      - "API Docs": api/index.md
+      - "Довідник API (Swagger UI)": api/openapi.md
+      - "Клієнтський SDK": api/sdk.md
+      - "Довідник з docstring (mkdocstrings)": api/reference.md
+  - "Рівень 4 · Архітектура":
+      - "Architecture Docs": architecture/index.md
+      - "SDD — System Design Document": architecture/sdd.md
+      - "ISD — Infrastructure Specification Document": architecture/isd.md
+      - "Кущ ADR":
+          - "ADR-0001: Вибір мови та фреймворку": architecture/adr/0001-choice-of-language-and-framework.md
+          - "ADR-0002: Стиль інтеграції": architecture/adr/0002-choice-of-data-store-or-integration.md
+          - "ADR-0003: Documentation as Code на MkDocs Material": architecture/adr/0003-documentation-as-code-mkdocs.md
+          - "Реєстр ADR": architecture/adr/index.md
+      - "Handover Package — task-manager": architecture/handover.md
+      - "Регламент підтримки документації": architecture/maintenance.md
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: date
+      locale: uk
+      fallback_to_build_date: true
+  - mermaid2
+  - swagger-ui-tag
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_if_no_docstring: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom

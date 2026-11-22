@@ -1,3 +1,9 @@
+---
+owner: "@LYarmoliuk"
+status: published
+review_date: 2027-02-19
+tags: [ops]
+---
 # PII inventory (підготовчий етап)
 
 Система: Task Manager API (FastAPI, Python 3.13), сховище: in-memory `PrivacyStore`
@@ -44,3 +50,10 @@
 
 Alice: `alice@example.com`, `+380501234567`, `Alice Tester`, `Kyiv, Test St 1`, `EXT-ALICE-001`,
 `pbkdf2$ALICE_HASH_DO_NOT_EXPORT`, `RESET-ALICE-TOKEN`, ip `203.0.113.10`. Bob і Admin: дані інших суб'єктів / ролі.
+
+## Пов'язані документи
+
+- [[privacy]]
+- [[sdd]]
+
+**Теги:** #ops

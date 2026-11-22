@@ -1,0 +1,19 @@
+extends: ["spectral:oas"]
+rules:
+  operation-description: error
+  schema-example-required:
+    description: Кожна схема components повинна мати example
+    severity: error
+    given: "$.components.schemas[*]"
+    then:
+      field: example
+      function: truthy
+  error-4xx-shared-schema:
+    description: Відповіді 4xx використовують спільну схему Error
+    severity: error
+    given: "$.paths[*][*].responses[?(@property.match(/^4/))].content['application/json'].schema"
+    then:
+      field: "$ref"
+      function: pattern
+      functionOptions:
+        match: "#/components/schemas/Error$"

@@ -1,0 +1,6 @@
+# Власники документації (ЛР№11): зміна docs/ потребує рев'ю власника
+/docs/          @LYarmoliuk
+/mkdocs.yml     @LYarmoliuk
+/hooks/         @LYarmoliuk
+/.github/       @LYarmoliuk
+/README.md      @LYarmoliuk

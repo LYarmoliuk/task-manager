@@ -1,0 +1,16 @@
+# markdownlint-cli2: правила стилю документації
+config:
+  default: true
+  MD013: false          # довжина рядка не обмежується (таблиці, шляхи)
+  MD033: false          # дозволено HTML-теги (<swagger-ui/>)
+  MD041: false          # перший рядок може бути front matter
+  MD024:
+    siblings_only: true # однакові заголовки допустимі в різних розділах
+  MD036: false
+  MD025: false
+ignores:
+  - "sdk/**"
+  - "site/**"
+  - "node_modules/**"
+  - ".venv/**"
+  - "lab*_out/**"

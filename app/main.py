@@ -90,3 +90,10 @@ def dependency_resilient() -> dict[str, str | int]:
 from app.privacy.api import install_privacy
 
 install_privacy(app)
+
+
+@app.get("/api/v2/stats")
+def lab10_stats_v2():
+    import os
+    ttl = int(os.environ.get("STATS_V2_TTL", "60"))
+    return {"version": 2, "ttl": ttl, "source": "lab10-crash-test"}
